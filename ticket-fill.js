@@ -163,13 +163,39 @@
     }
   }
 
+  function readTicketData() {
+    // Primary: URL ?d= (reliable on GitHub Pages)
+    try {
+      const param = new URLSearchParams(window.location.search).get("d");
+      if (param) return JSON.parse(param);
+    } catch (err) {
+      console.warn("URL ticket data parse failed", err);
+    }
+
+    // Fallback: localStorage
+    try {
+      const raw = localStorage.getItem(DATA_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (err) {
+      console.warn("localStorage ticket data parse failed", err);
+    }
+
+    return null;
+  }
+
   function run() {
-    const raw = localStorage.getItem(DATA_KEY);
-    if (raw) {
+    const data = readTicketData();
+    if (data) {
       try {
-        applyTicketData(JSON.parse(raw));
+        applyTicketData(data);
+        // Keep localStorage in sync for back-button draft restore
+        try {
+          localStorage.setItem(DATA_KEY, JSON.stringify(data));
+        } catch (err) {
+          /* ignore quota / private mode */
+        }
       } catch (err) {
-        console.warn("ticketData parse failed", err);
+        console.warn("ticketData apply failed", err);
       }
     }
   }

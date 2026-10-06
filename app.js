@@ -377,7 +377,9 @@
     };
 
     localStorage.setItem(DATA_KEY, JSON.stringify(data));
-    window.location.href = "Ticket.html";
+    const ticketUrl = new URL("Ticket.html", window.location.href);
+    ticketUrl.searchParams.set("d", JSON.stringify(data));
+    window.location.href = ticketUrl.href;
   });
 
   document.getElementById("reset-form").addEventListener("click", function () {
