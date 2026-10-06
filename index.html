@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>صدور بلیت قطار</title>
+    <link rel="stylesheet" href="form.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>صدور بلیت قطار</h1>
+        <p>اطلاعات را وارد کنید؛ بلیت با همان قالب چاپ باز می‌شود.</p>
+      </header>
+
+      <form id="ticket-form" class="card" novalidate>
+        <div class="grid">
+          <label class="full">
+            مسیر
+            <select name="route" id="route" required>
+              <option value="" disabled selected>انتخاب مسیر</option>
+              <option value="qom-tehran">قم به تهران</option>
+              <option value="tehran-qom">تهران به قم</option>
+            </select>
+          </label>
+
+          <label class="full">
+            نام مسافر
+            <input name="passengerName" id="passengerName" type="text" autocomplete="name" required />
+          </label>
+
+          <label class="full">
+            کد ملی
+            <input
+              name="nationalCode"
+              id="nationalCode"
+              type="text"
+              inputmode="numeric"
+              maxlength="10"
+              required
+            />
+          </label>
+
+          <label>
+            سالن
+            <input name="wagon" id="wagon" type="text" inputmode="numeric" required />
+          </label>
+          <label>
+            کوپه
+            <input name="coupe" id="coupe" type="text" inputmode="numeric" required />
+          </label>
+          <label>
+            صندلی
+            <input name="seat" id="seat" type="text" inputmode="numeric" required />
+          </label>
+          <label>
+            شماره قطار
+            <input name="trainNo" id="trainNo" type="text" inputmode="numeric" required />
+          </label>
+
+          <label class="full">
+            تاریخ حرکت
+            <select name="tripDate" id="tripDate" required></select>
+            <span class="hint">فقط امروز یا فردا (جلالی)</span>
+          </label>
+
+          <label>
+            ساعت حرکت
+            <select name="departTime" id="departTime" required dir="ltr"></select>
+          </label>
+          <label>
+            ساعت رسیدن
+            <select name="arriveTime" id="arriveTime" required dir="ltr"></select>
+          </label>
+        </div>
+
+        <details class="settings">
+          <summary>تنظیمات قیمت</summary>
+          <div class="body">
+            <label>
+              بهای بلیت (ریال)
+              <input name="price" id="price" type="text" inputmode="numeric" dir="ltr" />
+              <span class="hint">پیش‌فرض ۵۵۰٬۰۰۰ </span>
+            </label>
+          </div>
+        </details>
+
+        <div id="form-error" class="error" role="alert"></div>
+
+        <div class="actions">
+          <button type="submit" class="primary">نمایش بلیت</button>
+          <button type="button" class="ghost" id="reset-form">پاک کردن</button>
+        </div>
+      </form>
+    </div>
+    <script src="./Ticket_files/jalaali.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
