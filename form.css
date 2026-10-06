@@ -94,11 +94,6 @@ select {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-select[dir="ltr"] {
-  text-align: left;
-  font-variant-numeric: tabular-nums;
-}
-
 input:focus,
 select:focus {
   outline: none;

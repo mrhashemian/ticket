@@ -3,6 +3,7 @@
 
   const PRICE_KEY = "ticketDefaultPrice";
   const DATA_KEY = "ticketData";
+  const FORM_DRAFT_KEY = "ticketFormDraft";
   const DEFAULT_PRICE = 550000;
   const SERIAL_LENGTH = 9;
 
@@ -115,36 +116,18 @@
   }
 
   function normalizeTime(raw) {
-    const s = toEnglishDigits(raw).trim();
-    const m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    let s = toEnglishDigits(raw).trim();
+    if (/^\d{3,4}$/.test(s)) {
+      s = s.padStart(4, "0");
+      s = s.slice(0, 2) + ":" + s.slice(2);
+    }
+    s = s.replace(".", ":").replace("-", ":");
+    const m = s.match(/^(\d{1,2}):(\d{2})$/);
     if (!m) return null;
     const h = +m[1];
     const min = +m[2];
     if (h > 23 || min > 59) return null;
     return pad2(h) + ":" + pad2(min);
-  }
-
-  function fillTimeOptions(selectId) {
-    const select = document.getElementById(selectId);
-    select.innerHTML = "";
-
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    placeholder.textContent = "انتخاب ساعت";
-    select.appendChild(placeholder);
-
-    // 24-hour times every 5 minutes — one list, no AM/PM
-    for (let h = 0; h < 24; h++) {
-      for (let min = 0; min < 60; min += 5) {
-        const value = pad2(h) + ":" + pad2(min);
-        const opt = document.createElement("option");
-        opt.value = value;
-        opt.textContent = value;
-        select.appendChild(opt);
-      }
-    }
   }
 
   function randomSerial(length) {
@@ -155,6 +138,33 @@
     // avoid leading zero to look more like real serials
     if (s[0] === "0") s = String(1 + Math.floor(Math.random() * 9)) + s.slice(1);
     return s;
+  }
+
+  /** ثبت = 3 hours before departure (Jalali date + time with seconds) */
+  function issueDateTimeBeforeDepart(jalaliDateStr, timeStr) {
+    const parts = jalaliDateStr.split("/");
+    const jy = +parts[0];
+    const jm = +parts[1];
+    const jd = +parts[2];
+    const tp = timeStr.split(":");
+    const hour = +tp[0];
+    const minute = +tp[1];
+
+    const g = jalaali.toGregorian(jy, jm, jd);
+    const dt = new Date(g.gy, g.gm - 1, g.gd, hour, minute, 0);
+    dt.setHours(dt.getHours() - 3);
+
+    const j = jalaali.toJalaali(dt.getFullYear(), dt.getMonth() + 1, dt.getDate());
+    const sec = pad2(Math.floor(Math.random() * 60));
+    return (
+      formatJalali(j) +
+      " " +
+      pad2(dt.getHours()) +
+      ":" +
+      pad2(dt.getMinutes()) +
+      ":" +
+      sec
+    );
   }
 
   function fillDateOptions() {
@@ -213,6 +223,80 @@
     }
   }
 
+  function saveFormDraft() {
+    const draft = {
+      route: form.route.value,
+      passengerName: form.passengerName.value,
+      nationalCode: form.nationalCode.value,
+      wagon: form.wagon.value,
+      coupe: form.coupe.value,
+      seat: form.seat.value,
+      trainNo: form.trainNo.value,
+      tripDate: form.tripDate.value,
+      departTime: form.departTime.value,
+      arriveTime: form.arriveTime.value,
+      price: priceInput.value,
+    };
+    localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(draft));
+  }
+
+  function restoreFormDraft() {
+    let draft = null;
+    try {
+      const raw = localStorage.getItem(FORM_DRAFT_KEY);
+      if (raw) draft = JSON.parse(raw);
+    } catch (err) {
+      draft = null;
+    }
+
+    // Fall back to last generated ticket if draft missing
+    if (!draft) {
+      try {
+        const raw = localStorage.getItem(DATA_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        draft = {
+          route:
+            data.origin === "قم" && data.destination === "تهران"
+              ? "qom-tehran"
+              : "tehran-qom",
+          passengerName: data.passengerName || "",
+          nationalCode: String(data.nationalCode || "").replace(/#$/, ""),
+          wagon: data.wagon || "",
+          coupe: data.coupe || "",
+          seat: data.seat || "",
+          trainNo: data.trainNo || "",
+          tripDate: data.departDate || "",
+          departTime: data.departTime || "",
+          arriveTime: data.arriveTime || "",
+          price: data.priceFormatted || "",
+        };
+      } catch (err) {
+        return;
+      }
+    }
+
+    if (draft.route) form.route.value = draft.route;
+    if (draft.passengerName) form.passengerName.value = draft.passengerName;
+    if (draft.nationalCode) form.nationalCode.value = draft.nationalCode;
+    if (draft.wagon) form.wagon.value = draft.wagon;
+    if (draft.coupe) form.coupe.value = draft.coupe;
+    if (draft.seat) form.seat.value = draft.seat;
+    if (draft.trainNo) form.trainNo.value = draft.trainNo;
+    if (draft.departTime) form.departTime.value = draft.departTime;
+    if (draft.arriveTime) form.arriveTime.value = draft.arriveTime;
+    if (draft.price) priceInput.value = draft.price;
+
+    if (draft.tripDate) {
+      const opt = Array.from(form.tripDate.options).find(function (o) {
+        return o.value === draft.tripDate;
+      });
+      if (opt) {
+        form.tripDate.value = draft.tripDate;
+      }
+    }
+  }
+
   function showError(msg) {
     errorEl.textContent = msg;
     errorEl.classList.add("show");
@@ -222,6 +306,9 @@
     errorEl.textContent = "";
     errorEl.classList.remove("show");
   }
+
+  form.addEventListener("input", saveFormDraft);
+  form.addEventListener("change", saveFormDraft);
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -254,18 +341,20 @@
       return showError("سالن، کوپه و صندلی را وارد کنید.");
     if (!trainNo) return showError("شماره قطار را وارد کنید.");
     if (!dateOpt || !dateOpt.value) return showError("تاریخ را انتخاب کنید.");
-    if (!departTime) return showError("ساعت حرکت را انتخاب کنید.");
-    if (!arriveTime) return showError("ساعت رسیدن را انتخاب کنید.");
+    if (!departTime) return showError("ساعت حرکت را مثل ۲۱:۰۵ وارد کنید.");
+    if (!arriveTime) return showError("ساعت رسیدن را مثل ۲۳:۱۰ وارد کنید.");
     if (!Number.isFinite(price) || price < 0)
       return showError("قیمت نامعتبر است.");
 
     savePrice();
+    saveFormDraft();
 
     const tripDate = dateOpt.value;
     const weekday = dateOpt.dataset.weekday || WEEKDAYS[new Date().getDay()];
     const serial = randomSerial(SERIAL_LENGTH);
     const priceFormatted = formatNumber(price);
     const priceWords = numberToPersianWords(price);
+    const issueDateTime = issueDateTimeBeforeDepart(tripDate, departTime);
 
     const data = {
       origin,
@@ -284,24 +373,23 @@
       nationalCode: nationalRaw + "#",
       priceFormatted,
       priceWords,
+      issueDateTime,
     };
 
-    sessionStorage.setItem(DATA_KEY, JSON.stringify(data));
-    window.open("Ticket.html", "_blank");
+    localStorage.setItem(DATA_KEY, JSON.stringify(data));
+    window.location.href = "Ticket.html";
   });
 
   document.getElementById("reset-form").addEventListener("click", function () {
     form.reset();
     clearError();
+    localStorage.removeItem(FORM_DRAFT_KEY);
     fillDateOptions();
-    fillTimeOptions("departTime");
-    fillTimeOptions("arriveTime");
     loadPrice();
   });
 
   priceInput.addEventListener("blur", savePrice);
   fillDateOptions();
-  fillTimeOptions("departTime");
-  fillTimeOptions("arriveTime");
   loadPrice();
+  restoreFormDraft();
 })();

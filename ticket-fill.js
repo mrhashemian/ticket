@@ -3,106 +3,110 @@
 
   const DATA_KEY = "ticketData";
 
-  function replaceExactText(root, from, to) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.nodeValue && node.nodeValue.trim() === from) {
-        node.nodeValue = node.nodeValue.replace(from, to);
-        return true;
-      }
-    }
-    return false;
+  function hasDirectIcon(el, className) {
+    return Array.from(el.children).some(function (child) {
+      return child.tagName === "I" && child.classList.contains(className);
+    });
   }
 
-  function replaceSubstring(root, from, to) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.nodeValue && node.nodeValue.indexOf(from) !== -1) {
-        node.nodeValue = node.nodeValue.replace(from, to);
-        return true;
-      }
-    }
-    return false;
+  function setTextNodeValue(node, value) {
+    if (!node || node.nodeType !== Node.TEXT_NODE) return;
+    node.nodeValue = node.nodeValue.replace(node.nodeValue.trim(), value);
   }
 
-  function findHeaderCities() {
-    const originLabel = Array.from(document.querySelectorAll("div")).find(
-      function (el) {
-        return el.childNodes.length && el.textContent.trim() === "مبداء" ||
-          (el.querySelector(".bi-geo-alt-fill") && el.textContent.indexOf("مبداء") !== -1 && el.children.length <= 2);
-      }
-    );
-    const destLabel = Array.from(document.querySelectorAll("div")).find(
-      function (el) {
-        return el.querySelector(".bi-geo-alt") && !el.querySelector(".bi-geo-alt-fill") &&
-          el.textContent.indexOf("مقصد") !== -1;
-      }
-    );
-    return { originLabel, destLabel };
+  function firstTextChild(el) {
+    if (!el) return null;
+    for (let i = 0; i < el.childNodes.length; i++) {
+      const n = el.childNodes[i];
+      if (n.nodeType === Node.TEXT_NODE && n.nodeValue.trim()) return n;
+    }
+    return null;
   }
 
-  function setCityAfterLabel(labelEl, city) {
-    if (!labelEl) return;
-
-    // Origin: bare text node right after the label div
-    let node = labelEl.nextSibling;
-    while (node) {
-      if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
-        node.nodeValue = node.nodeValue.replace(node.nodeValue.trim(), city);
-        return;
-      }
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        // Destination: city text is the first non-empty text node inside the next div
-        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-        let t;
-        while ((t = walker.nextNode())) {
-          if (t.nodeValue && t.nodeValue.trim()) {
-            t.nodeValue = t.nodeValue.replace(t.nodeValue.trim(), city);
-            return;
-          }
-        }
-        return;
-      }
-      node = node.nextSibling;
+  function nextTextSibling(el) {
+    let n = el && el.nextSibling;
+    while (n) {
+      if (n.nodeType === Node.TEXT_NODE && n.nodeValue.trim()) return n;
+      n = n.nextSibling;
     }
+    return null;
+  }
+
+  /** Flex row that holds origin | train image | destination */
+  function getRouteRow() {
+    const img = document.querySelector('img[src*="Printtrain3"]');
+    if (!img) return null;
+    let el = img.parentElement;
+    while (el && el !== document.body) {
+      const style = el.getAttribute("style") || "";
+      if (style.indexOf("display: flex") !== -1 && style.indexOf("gap: 40px") !== -1) {
+        return el;
+      }
+      el = el.parentElement;
+    }
+    return null;
   }
 
   function applyTicketData(data) {
-    const { originLabel, destLabel } = findHeaderCities();
-    setCityAfterLabel(originLabel, data.origin);
-    setCityAfterLabel(destLabel, data.destination);
+    const routeRow = getRouteRow();
+    if (routeRow && routeRow.children.length >= 3) {
+      const originCol = routeRow.children[0];
+      const destCol = routeRow.children[2];
 
-    // Departure: weekday + date + time (same markup as original)
-    const departDiv = Array.from(document.querySelectorAll("div")).find(function (el) {
-      return el.querySelector(".bi-clock-history") && el.querySelector(".bi-calendar2-check");
-    });
-    if (departDiv) {
-      departDiv.innerHTML =
-        '<i class="bi bi-clock-history"></i> ' +
-        data.departWeekday +
-        " " +
-        data.departDate +
-        ' - <i class="bi bi-calendar2-check"></i> ' +
-        data.departTime +
-        "  ";
-    }
+      // Origin city: text node after مبداء label
+      const originLabel = originCol.querySelector(".bi-geo-alt-fill");
+      if (originLabel && originLabel.parentElement) {
+        setTextNodeValue(nextTextSibling(originLabel.parentElement), data.origin);
+      }
 
-    // Arrival: time only — same as original template (no date)
-    if (destLabel && destLabel.parentElement) {
-      const destCol = destLabel.parentElement;
-      const timeBox = Array.from(destCol.querySelectorAll("div")).find(function (el) {
-        return el.querySelector(".bi-clock-history") && !el.querySelector(".bi-calendar2-check");
+      // Destination city: first text node inside the city wrapper (sibling of مقصد label)
+      const destIcon = destCol.querySelector(".bi-geo-alt:not(.bi-geo-alt-fill)");
+      const destLabel = destIcon && destIcon.parentElement;
+      const destCityWrap = destLabel && destLabel.nextElementSibling;
+      if (destCityWrap) {
+        setTextNodeValue(firstTextChild(destCityWrap), data.destination);
+
+        // Arrival time only (nested div under city wrap)
+        const arriveBox = destCityWrap.querySelector("div");
+        if (arriveBox && hasDirectIcon(arriveBox, "bi-clock-history")) {
+          arriveBox.innerHTML =
+            '<i class="bi bi-clock-history"></i> ' + data.arriveTime;
+        }
+      }
+
+      // Departure datetime: leaf div with both clock + calendar icons (no nested divs)
+      const departDiv = Array.from(originCol.querySelectorAll("div")).find(function (el) {
+        if (el.querySelector("div")) return false;
+        return (
+          hasDirectIcon(el, "bi-clock-history") &&
+          hasDirectIcon(el, "bi-calendar2-check")
+        );
       });
-      if (timeBox) {
-        timeBox.innerHTML =
-          '<i class="bi bi-clock-history"></i> ' + data.arriveTime;
+      if (departDiv) {
+        departDiv.innerHTML =
+          '<i class="bi bi-clock-history"></i> ' +
+          data.departWeekday +
+          " " +
+          data.departDate +
+          ' - <i class="bi bi-calendar2-check"></i> ' +
+          data.departTime +
+          "  ";
       }
     }
 
-    replaceExactText(document.body, "730", data.trainNo);
-    replaceExactText(document.body, "839021283", data.serial);
+    // Train number + serial — only the labeled value divs, not whole body
+    document.querySelectorAll("div").forEach(function (el) {
+      if (el.children.length || !el.parentElement) return;
+      const label = el.parentElement.querySelector("div");
+      if (!label || label === el) return;
+      const labelText = label.textContent.trim();
+      if (labelText === "شماره قطار" && el.textContent.trim() === "730") {
+        el.textContent = data.trainNo;
+      }
+      if (labelText === "سریال بلیت" && el.textContent.trim() === "839021283") {
+        el.textContent = data.serial;
+      }
+    });
 
     document.querySelectorAll(".label2").forEach(function (label) {
       const val = label.nextElementSibling;
@@ -117,30 +121,50 @@
     if (fonts[0]) fonts[0].textContent = data.passengerName;
     if (fonts[1]) fonts[1].textContent = data.nationalCode;
 
-    // بهای بلیت + پرداختی
-    replaceSubstring(document.body, "420,000ریال", data.priceFormatted + "ریال");
-    replaceSubstring(document.body, "420,000ریال", data.priceFormatted + "ریال");
-    // جمع کل عددی
-    replaceExactText(document.body, "420,000", data.priceFormatted);
+    // Prices: only in passenger card + total box (class-based / known sample strings in those areas)
+    const priceSpans = document.querySelectorAll(".price-row span, .final-price span");
+    priceSpans.forEach(function (span) {
+      if (span.textContent.indexOf("420,000ریال") !== -1) {
+        span.textContent = data.priceFormatted + "ریال";
+      }
+    });
 
-    const wordsStrong = Array.from(document.querySelectorAll("strong")).find(function (el) {
+    const totalNumeric = Array.from(document.querySelectorAll("strong")).find(function (el) {
+      return el.textContent.trim() === "420,000";
+    });
+    if (totalNumeric) totalNumeric.textContent = data.priceFormatted;
+
+    const totalWords = Array.from(document.querySelectorAll("strong")).find(function (el) {
       return el.textContent.indexOf("چهارصد و بيست هزار") !== -1;
     });
-    if (wordsStrong) wordsStrong.textContent = data.priceWords + " ";
+    if (totalWords) totalWords.textContent = data.priceWords + " ";
 
-    // Stop stations (original: two <strong> cities)
-    const stopsRow = Array.from(document.querySelectorAll("div")).find(function (el) {
-      return el.textContent.indexOf("ایستگاه هایی که قطار در آنها توقف دارد") !== -1;
+    // Stop stations: origin then destination (only inside that block)
+    const stopsBox = Array.from(document.querySelectorAll("div")).find(function (el) {
+      return (
+        (el.getAttribute("style") || "").indexOf("margin-top:2px") !== -1 &&
+        el.textContent.indexOf("ایستگاه هایی که قطار در آنها توقف دارد") !== -1
+      );
     });
-    if (stopsRow) {
-      const strongs = stopsRow.querySelectorAll("strong");
+    if (stopsBox) {
+      const strongs = stopsBox.querySelectorAll("strong");
       if (strongs[0]) strongs[0].textContent = data.origin;
       if (strongs[1]) strongs[1].textContent = data.destination;
+    }
+
+    // ثبت: 3 hours before departure — only this span, leave صادرکننده name alone
+    if (data.issueDateTime) {
+      const issueSpan = Array.from(document.querySelectorAll("span")).find(function (el) {
+        return el.textContent.indexOf("ثبت:") === 0;
+      });
+      if (issueSpan) {
+        issueSpan.textContent = "ثبت:" + data.issueDateTime;
+      }
     }
   }
 
   function run() {
-    const raw = sessionStorage.getItem(DATA_KEY);
+    const raw = localStorage.getItem(DATA_KEY);
     if (raw) {
       try {
         applyTicketData(JSON.parse(raw));
@@ -148,7 +172,6 @@
         console.warn("ticketData parse failed", err);
       }
     }
-    window.print();
   }
 
   if (document.readyState === "loading") {
