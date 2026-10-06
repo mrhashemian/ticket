@@ -1,0 +1,441 @@
+﻿
+body {
+    direction: rtl !important;
+    margin: 0 !important;
+}
+
+.PaperSize {
+    height: 294mm;
+}
+
+@font-face {
+    /*font-family: "BTitrBold";
+    src: url("../../font/Font-Fa/BTitrBold.eot?#iefix") format("embedded-opentype"), 
+    url("../../font/Font-Fa/BTitrBold.otf") format("opentype"), 
+    url("../../font/Font-Fa/BTitrBold.svg") format("svg"), 
+    url("../../font/Font-Fa/BTitrBold.ttf") format("truetype"), 
+    url("../../font/Font-Fa/BTitrBold.woff") format("woff"), 
+    url("../../font/Font-Fa/BTitrBold.woff2") format("woff2"); 
+    font-weight: normal;
+    font-style: normal;*/
+    font-family: "BTitrBold";
+    src: url("../../font/Font-Fa/BTitrBold.eot"); /* IE9 Compat Modes */
+    src: url("../../font/Font-Fa/BTitrBold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("../../font/Font-Fa/BTitrBold.otf") format("opentype"), /* Open Type Font */
+    url("../../font/Font-Fa/BTitrBold.svg") format("svg"), /* Legacy iOS */
+    url("../../font/Font-Fa/BTitrBold.ttf") format("truetype"), /* Safari, Android, iOS */
+    url("../../font/Font-Fa/BTitrBold.woff") format("woff"), /* Modern Browsers */
+    url("../../font/Font-Fa/BTitrBold.woff2") format("woff2"); /* Modern Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "BTrafficBold";
+    src: url("../../font/Font-Fa/BTrafficBold.eot"); /* IE9 Compat Modes */
+    src: url("../../font/Font-Fa/BTrafficBold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("../../font/Font-Fa/BTrafficBold.otf") format("opentype"), /* Open Type Font */
+    url("../../font/Font-Fa/BTrafficBold.svg") format("svg"), /* Legacy iOS */
+    url("../../font/Font-Fa/BTrafficBold.ttf") format("truetype"), /* Safari, Android, iOS */
+    url("../../font/Font-Fa/BTrafficBold.woff") format("woff"), /* Modern Browsers */
+    url("../../font/Font-Fa/BTrafficBold.woff2") format("woff2"); /* Modern Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: "BTraffic";
+    src: url("../../font/Font-Fa/BTraffic.eot"); /* IE9 Compat Modes */
+    src: url("../../font/Font-Fa/BTraffic.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("../../font/Font-Fa/BTraffic.otf") format("opentype"), /* Open Type Font */
+    url("../../font/Font-Fa/BTraffic.svg") format("svg"), /* Legacy iOS */
+    url("../../font/Font-Fa/BTraffic.ttf") format("truetype"), /* Safari, Android, iOS */
+    url("../../font/Font-Fa/BTraffic.woff") format("woff"), /* Modern Browsers */
+    url("../../font/Font-Fa/BTraffic.woff2") format("woff2"); /* Modern Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'fre3of9x';
+    src: url('../../font/Font-Barcode/fre3of9x.eot'), url('../../font/Font-Barcode/fre3of9x.woff'), url('../../font/Font-Barcode/fre3of9x.ttf');
+}
+
+
+@page {
+    size: portrait;
+    margin: 0mm;
+}
+
+@page port {
+    size: portrait;
+}
+
+@page land {
+    size: landscape;
+}
+
+.portrait {
+    page: port;
+}
+
+.landscape {
+    page: land;
+}
+
+@media print {
+    .fa, .fas, .far {
+        color: cadetblue !important;
+    }
+}
+
+header nav, footer {
+    display: none;
+}
+
+.divcontect {
+    position: relative;
+    margin: 10px auto 10px auto;
+    border: 2px #0094ff solid;
+    min-height: 500px;
+    padding-top: 0.6cm !important;
+    display: block;
+    direction: rtl;
+}
+
+.ticket {
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    -o-border-radius: 6px;
+/*    width: 17.50cm;
+    border: 1px solid;
+    min-height: 5.9cm;*/
+    position: relative;
+    margin: 2px auto 1px auto;
+}
+
+.head {
+    min-height: 0.90cm;
+}
+
+    .head .center {
+        width: 5.55cm;
+        border-bottom: 1px solid;
+        margin: 0px auto 0px auto;
+        position: relative;
+        font-family: bTrafficBold;
+        font-family: bTitrBold;
+        font-size: 7px;
+        right: 7px;
+    }
+
+    .head .left {
+        float: left;
+        width: 2.45cm;
+        border-bottom: 1px solid;
+    }
+
+    .head .right {
+        border-bottom: 1px solid;
+        width: 2.9cm;
+        float: right;
+        min-height: 18.7px;
+    }
+
+    .head .divrow2 {
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+        display: flex;
+    }
+
+.line1 {
+    width: 24px;
+    height: 22px;
+    border-bottom: 1px solid;
+    -webkit-transform: translateY(20px) translateX(5px) rotate(50deg);
+    position: absolute;
+    right: 5.56cm;
+    top: -10.5px;
+}
+
+.line2 {
+    width: 24px;
+    height: 22px;
+    border-bottom: 1px solid;
+    -webkit-transform: translateY(20px) translateX(5px) rotate(-50deg);
+    top: -10px;
+    right: 3.13cm;
+    position: absolute;
+}
+
+.line3 {
+    width: 23px;
+    height: 22px;
+    border-bottom: 1px solid;
+    -webkit-transform: translateY(20px) translateX(5px) rotate(50deg);
+    position: absolute;
+    right: 14.50cm;
+    top: -10px;
+}
+
+.line4 {
+    width: 25px;
+    height: 22px;
+    border-bottom: 1px solid;
+    -webkit-transform: translateY(20px) translateX(5px) rotate(-50deg);
+    top: -10px;
+    right: 11.95cm;
+    position: absolute;
+}
+
+.head .divrow2 .bright {
+    border-bottom: 1px solid;
+    width: 2.5cm;
+    position: absolute;
+    height: 17.8px;
+    right: 3.29cm;
+    top: 0.5cm;
+}
+
+.head .divrow2 .bright2 {
+    border-bottom: 1px solid;
+    width: 2.61cm;
+    position: absolute;
+    height: 17.6px;
+    right: 12.1cm;
+    top: 0.5cm;
+}
+
+.head .divrow2 .company, .head .divrow2 .logo {
+    width: 2.7cm;
+    position: absolute;
+    height: 17.8px;
+    right: 3.3cm;
+    height: 36px;
+    margin-top: -20px;
+    text-align: center;
+    vertical-align: central;
+    line-height: 36px;
+    font-size: 10px;
+    font-family: bTrafficBold;
+    font-family: bTitrBold;
+}
+
+.head .divrow2 .logo {
+    right: 12.0cm;
+    margin-top: -18px;
+}
+
+    .head .divrow2 .logo img {
+        height: 1cm;
+    }
+
+.top {
+    min-height: 1.3cm;
+    border-bottom: 1px solid;
+    margin-top: -20px;
+}
+
+.bottom {
+    width: 100%;
+}
+
+    .bottom .right {
+        min-width: 3.2cm;
+        float: right;
+        text-align: center;
+    }
+
+        .bottom .right .righttop {
+            font-size: 12px;
+            font-family: bTrafficBold;
+        }
+
+        .bottom .right .rightbottom {
+            font-size: 5px;
+            font-family: Tahoma;
+            display: inherit;
+            text-align: center;
+            margin-top: -7px;
+        }
+
+    .bottom .left {
+        float: left;
+    }
+
+        .bottom .left .data {
+            min-height: 0.9cm;
+            width: 100%;
+        }
+
+        .bottom .left .desc {
+            font-family: bTrafficBold;
+            font-size: 7px;
+            text-align: right;
+            border: 1px solid;
+            min-height: 26px;
+            width: 99%;
+        }
+
+        .bottom .left .roles {
+            font-family: bTrafficBold !important;
+            font-size: 6px;
+            float: left;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .bottom .left .data table td, .bottom .left .data table tr {
+            line-height: 10px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .bottom .left .data .lbl {
+            font-family: bTrafficBold;
+            font-family: bTitrBold;
+            font-size: 7px;
+        }
+
+        .bottom .left .data .txt {
+            font-family: bTrafficBold;
+            font-size: 8px;
+        }
+
+    .bottom .right img {
+        height: 3.0cm;
+    }
+
+.top .lbl {
+    font-family: bTrafficBold;
+    font-family: bTitrBold;
+    font-size: 10px;
+}
+
+.top .txt {
+    font-family: bTrafficBold;
+    font-size: 14px;
+    font-size: 12px;
+}
+
+.top table td, .top table tr {
+    line-height: 4px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.far, .fas {
+    font-size: 11px;
+    color: #808080;
+}
+
+#PassengerName {
+    background: url(bg-div.png) repeat;
+    width: 5.5cm !important;
+    text-align: right;
+}
+
+    #PassengerName .centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+.desc {
+    font-family: bTrafficBold;
+}
+
+    .desc span {
+        margin: 5px;
+    }
+
+.icontrainPDF {
+    font-size: x-small !important;
+    color: darkgray !important;
+}
+
+
+.ticketSum {
+    min-height: 24px !important;
+    height: 24px !important;
+    border-radius: 0px;
+    font-size: 14px;
+    padding-top: 2px;
+}
+
+
+
+span.icontrain > img {
+    height: 14px !important;
+}
+
+
+
+.BTraffic11Bold {
+    font-size: 11px !important;
+    font-family: bTrafficBold !important;
+    /*font-weight: bold;*/
+}
+
+.BTraffic10Bold {
+    font-size: 10px !important;
+    font-family: bTrafficBold !important;
+    /*font-weight: bold;*/
+}
+
+.BTraffic9Bold {
+    font-size: 9px !important;
+    font-family: bTrafficBold !important;
+    /*font-weight: bold;*/
+}
+
+.BTraffic9 {
+    font-size: 8px !important;
+    font-family: bTraffic !important;
+}
+
+.BTraffic8Bold {
+    font-size: 8px !important;
+    font-family: bTrafficBold !important;
+    /*font-weight: bold;*/
+}
+
+
+.BTitr11 {
+    font-size: 10px !important;
+    font-family: bTitrBold !important;
+}
+
+.BTitr10 {
+    font-size: 10px !important;
+    font-family: bTitrBold !important;
+}
+
+.BTitr9 {
+    font-size: 9px !important;
+    font-family: bTitrBold !important;
+}
+
+.BTitr8 {
+    font-size: 8px !important;
+    font-family: bTitrBold !important;
+}
+
+.b-tr {
+    height: 7.383px;
+}
+
+.b-tr2 {
+    height: 16px;
+}
+
+
+/*------------------------------------------------------------------------------------------------------------------------------------------------------*/
+.ticket-row {
+    border-top: 6px solid #0202ff !important;
+}

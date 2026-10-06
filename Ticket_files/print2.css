@@ -1,0 +1,229 @@
+﻿@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        background: white !important;
+        font-size: 11px;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .a4-container {
+        box-shadow: none !important;
+        padding: 0.5cm !important;
+    }
+
+    .ticket-row {
+        /*margin-bottom: 0.1cm !important;*/
+        border-top: 6px solid darkblue !important;
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        overflow: scroll;
+    }
+
+    .total-section {
+        display: block !important;
+        page-break-before: avoid;
+    }
+}
+
+
+.a4-container {
+    width: 21cm;
+    min-height: 29.7cm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0.2cm;
+}
+
+.ticket-row {
+    border: 1px solid darkblue !important;
+    border-top: 6px solid darkblue !important;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 0.1cm;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e5e9;
+    transition: transform 0.3s ease;
+    page-break-inside: avoid;
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    padding: 0.5px 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(80, 79, 79);
+    border-radius: 10px 10px 0 0;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.ticket-title {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.price {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.946);
+    border-radius: 20px;
+}
+
+.ticket-content {
+    padding-top: 3px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.route-section {
+    flex: 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 6px;
+    border-left: 1px dashed #696767;
+    line-height: 16px;
+    flex-wrap: nowrap;
+    text-wrap: nowrap;
+}
+
+.station-info {
+    text-align: right;
+    flex: 1;
+}
+
+.station {
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 3px;
+    color: #1e3c72;
+}
+
+.time {
+    font-size: 0.8rem;
+    color: #495057;
+    font-weight: 600;
+}
+
+.date {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+.divider-section {
+    flex: 0.5;
+    text-align: right;
+    color: #1e3c72;
+}
+
+.train-section {
+    flex: 1.3;
+    padding: 0 3px;
+    border-left: 1px dashed #696767;
+}
+
+.train-details {
+    font-size: 11px;
+}
+
+.passenger-section {
+    flex: 2.5;
+    padding: 0 5px;
+    line-height: 15px;
+}
+
+.passenger-details {
+    font-size: 11px;
+}
+
+.barcode-section {
+    flex: 1.2;
+    text-align: center;
+    padding: 0 4px;
+    border-right: 2px dashed #5d5c5c;
+}
+
+.logo-section {
+    flex: 1.4;
+    text-align: right;
+    padding: 0 4px;
+}
+
+.barcode-small {
+    height: 60px;
+    margin-bottom: 2px;
+    margin-top: 1px;
+}
+
+.toman::after {
+    content: "ریال";
+}
+
+.ajancy-style {
+    font-size: 0.6rem;
+}
+
+.print-controls {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.print-btn {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    transition: all 0.3s ease;
+}
+
+    .print-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
+    }
+
+.header-icon {
+    margin-left: 5px;
+    opacity: 0.9;
+}
+
+.train-icon {
+    color: #1e3c72 !important;
+    margin-left: 2px;
+}
+
+.total-section {
+    display: none;
+    border: 1px solid black;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+@media (max-width: 21cm) {
+    .a4-container {
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+}
+
+
